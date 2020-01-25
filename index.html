@@ -2,8 +2,9 @@
   <head>
     <title>Flower Catalog</title>
     <link rel="stylesheet" href="css/homePage.css" />
+    <script src="js/main.js"></script>
   </head>
-  <body>
+  <body onload="main()">
     <div class="whole_card">
       <div class="catalog_name_box">
         <p class="catalog_name">Flower Catalog</p>
@@ -14,10 +15,16 @@
         </div>
         <div class="side_content">
           <ul>
-            <li><a href="html/abeliophyllum.html">Abeliophyllum</a></li>
+            <li>
+              <a href="html/abeliophyllum.html">Abeliophyllum</a>
+            </li>
             <li><a href="html/ageratum.html">Ageratum</a></li>
           </ul>
-          <img src="images/animated-flower-image-0021.gif" alt="" />
+          <img
+            src="images/animated-flower-image-0021.gif"
+            alt=""
+            id="canGif"
+          />
           <div><a href="Guest Book">Guest Book</a></div>
         </div>
       </div>
