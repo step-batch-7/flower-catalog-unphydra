@@ -1,0 +1,51 @@
+body {
+  height: 100vh;
+  width: 99vw;
+  display: flex;
+  justify-content: center;
+}
+
+.whole_card {
+  width: 80vw;
+}
+
+.catalog_name_box {
+  font-size: 30px;
+  text-align: right;
+  margin: 0 auto;
+  width: 80vw;
+  border-bottom: 1px solid black;
+}
+
+.catalog_name {
+  margin: 20px 0;
+  margin-right: 150px;
+  font-weight: 400;
+  color: #f3a718;
+}
+
+.main_body {
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.main_image {
+  padding: 5px;
+  height: 75vh;
+  width: 66vw;
+}
+
+.main_image > img {
+  height: 100%;
+  width: 100%;
+}
+
+.side_content {
+  width: 14vw;
+  padding-top: 220px;
+}
+
+.side_content > img {
+  padding-left: 70px;
+}
