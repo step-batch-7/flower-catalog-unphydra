@@ -1,0 +1,58 @@
+body {
+  height: 100vh;
+  width: 99vw;
+  display: flex;
+  justify-content: center;
+}
+
+.whole_card {
+  width: 80vw;
+}
+
+.book_name_box {
+  font-size: 30px;
+  margin: 0 auto;
+  width: 80vw;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.book_name {
+  margin: 0;
+  font-weight: 400;
+  color: #f3a718;
+}
+
+.comment {
+  font-size: 30px;
+  font-weight: 400;
+}
+
+#nameBox {
+  width: 150px;
+  padding: 5px;
+}
+
+#commentBox {
+  background: none;
+  margin-top: 10px;
+  height: 70px;
+  width: 200px;
+}
+
+#submitBtn {
+  background: none;
+  margin-top: 5px;
+  width: 60px;
+  font-size: 15px;
+  height: 25px;
+  border-radius: 3px;
+  background-image: linear-gradient(white, rgb(177, 176, 176));
+}
+
+.allComment {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  height: 200px;
+}

@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="/css/guestBook.css" />
+  </head>
+  <body>
+    <div class="whole_card">
+      <div class="book_name_box">
+        <a href="/"><<</a>
+        <p class="book_name">Guest Book</p>
+      </div>
+      <div class="main_body">
+        <p class="comment">Leave a comment</p>
+        <form action="/html/guestBook.html" method="POST">
+          <span>Name : <input type="text" id="nameBox" name="name"/></span
+          ><br />
+          <span
+            >Comment :
+            <textarea id="commentBox" name="comment"></textarea> </span
+          ><br />
+          <input type="submit" id="submitBtn" />
+        </form>
+        <div class="allComment"></div>
+      </div>
+    </div>
+  </body>
+</html>
