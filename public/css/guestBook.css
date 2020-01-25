@@ -55,4 +55,14 @@ body {
   border-top: 1px solid black;
   border-bottom: 1px solid black;
   height: 200px;
+  overflow-y: scroll;
+}
+
+.commentName {
+  width: 100px;
+}
+
+.eachComment {
+  display: flex;
+  justify-content: space-between;
 }
