@@ -40,18 +40,23 @@ const getDateAndTime = function(dateString) {
   return `${date} ${hour}:${minutes}`;
 };
 
+const serveGuestBookPost = function(req) {
+  const date = new Date();
+  let { name, commentMsg } = req.body;
+  commentMsg = parseComment(commentMsg);
+  commentList.unshift({ name, commentMsg, date });
+  fs.writeFileSync(
+    './commentList.json',
+    JSON.stringify(commentList),
+    'utf8'
+  );
+  const res = new Response();
+  res.setHeader('Location', '/html/guestBook.html');
+  res.statusCode = 302;
+  return res;
+};
+
 const serveGuestBook = function(req) {
-  if (req.method == 'POST') {
-    const date = new Date();
-    let { name, commentMsg } = req.body;
-    commentMsg = parseComment(commentMsg);
-    commentList.unshift({ name, commentMsg, date });
-    fs.writeFileSync(
-      './commentList.json',
-      JSON.stringify(commentList),
-      'utf8'
-    );
-  }
   const html = getGustBookHtml(commentList);
   const res = new Response();
   res.setHeader('Content-Type', CONTENT_TYPES.html);
@@ -93,10 +98,13 @@ const getGustBookHtml = function(commentList) {
 };
 
 const findHandler = req => {
-  if (req.url === '/html/guestBook.html') return serveGuestBook;
   if (req.method === 'GET') {
     if (req.url === '/') return serveHomePage;
+    if (req.url === '/html/guestBook.html') return serveGuestBook;
     return serveStaticFile;
+  }
+  if (req.method === 'POST') {
+    if (req.url === '/html/redirect') return serveGuestBookPost;
   }
   return () => new Response();
 };
