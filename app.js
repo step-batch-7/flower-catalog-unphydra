@@ -32,21 +32,21 @@ const serveHomePage = req => {
   return res;
 };
 
-const getDate = function() {
-  let date = new Date();
-  const hour = date.getHours();
-  const minutes = date.getMinutes();
-  date = date.toJSON().slice(0, 10);
-  return { date, time: { hour, minutes } };
+const getDateAndTime = function(dateString) {
+  let newDate = new Date(dateString);
+  const hour = newDate.getHours();
+  const minutes = newDate.getMinutes();
+  const date = newDate.toJSON().slice(0, 10);
+  return `${date} ${hour}:${minutes}`;
 };
 
 const serveGuestBook = function(req) {
   if (req.method == 'POST') {
-    const dateAndTime = getDate();
+    const date = new Date();
     let { name, commentMsg } = req.body;
     commentMsg = decodeURIComponent(commentMsg);
     commentMsg = commentMsg.replace(/\+/g, ' ');
-    commentList.unshift({ name, commentMsg, dateAndTime });
+    commentList.unshift({ name, commentMsg, date });
     fs.writeFileSync(
       './commentList.json',
       JSON.stringify(commentList),
@@ -65,7 +65,7 @@ const serveGuestBook = function(req) {
 const getGustBookHtml = function(commentList) {
   let html = '&nbsp';
   commentList.forEach(comment => {
-    const dateAndTime = `${comment.dateAndTime.date} ${comment.dateAndTime.time.hour}:${comment.dateAndTime.time.minutes}`;
+    const dateAndTime = getDateAndTime(comment.date);
     html += `<div class="eachComment">
       <div class="commentHeading">
         <img src="/images/logo.jpg" alt="" class="logo" />
