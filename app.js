@@ -32,14 +32,21 @@ const serveHomePage = req => {
   return res;
 };
 
+const getDate = function() {
+  let date = new Date();
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
+  date = date.toJSON().slice(0, 10);
+  return { date, time: { hour, minutes } };
+};
+
 const serveGuestBook = function(req) {
   if (req.method == 'POST') {
-    let date = new Date().toJSON().slice(0, -5);
-    date = date.replace(/T/, ' ');
+    const dateAndTime = getDate();
     let { name, commentMsg } = req.body;
     commentMsg = decodeURIComponent(commentMsg);
     commentMsg = commentMsg.replace(/\+/g, ' ');
-    commentList.push({ name, commentMsg, date });
+    commentList.unshift({ name, commentMsg, dateAndTime });
     fs.writeFileSync(
       './commentList.json',
       JSON.stringify(commentList),
@@ -56,21 +63,23 @@ const serveGuestBook = function(req) {
 };
 
 const getGustBookHtml = function(commentList) {
-  let divs = `<div class="eachComment">
-  <div class="commentName">Date Name</div>
-  <div>Comment</div>
-</div>`;
+  let html = '&nbsp';
   commentList.forEach(comment => {
-    const dateAndName = `<div class="commentName">${comment.date} -> ${comment.name}</div>`;
-    const msg = `<p>${comment.commentMsg}</p>`;
-    divs += `<div class="eachComment">
-    ${dateAndName}
-    ${msg}
-  </div>`;
+    const dateAndTime = `${comment.dateAndTime.date} ${comment.dateAndTime.time.hour}:${comment.dateAndTime.time.minutes}`;
+    html += `<div class="eachComment">
+      <div class="commentHeading">
+        <img src="/images/logo.jpg" alt="" class="logo" />
+        <span class="commenterName">${comment.name}</span>&nbsp;
+        <span class="dateAndTime">${dateAndTime}</span>
+      </div>
+      <div class="commenterMsg">
+      ${comment.commentMsg}
+      </div>
+    </div>`;
   });
   let content = fs.readFileSync('./public/html/guestBook.html', 'utf8');
   const pattern = new RegExp(`__comment__`, 'g');
-  return content.replace(pattern, divs);
+  return content.replace(pattern, html);
 };
 
 const findHandler = req => {

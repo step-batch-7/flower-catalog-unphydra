@@ -52,17 +52,49 @@ body {
 }
 
 .allComment {
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  height: 200px;
+  border: 1px solid rgb(200, 200, 200);
+  border-radius: 10px;
+  box-shadow: 0px 0px 2px 1px rgb(200, 200, 200);
+  height: 300px;
   overflow-y: scroll;
-}
-
-.commentName {
-  width: 100px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-top: 10px;
 }
 
 .eachComment {
-  display: flex;
-  justify-content: space-between;
+  height: 130px;
+  width: 300px;
+  margin: 5px;
+  border: 1px solid rgb(200, 200, 200);
+  box-shadow: 0px 0px 2px 1px rgb(200, 200, 200);
+  border-radius: 7px;
+
+  overflow: hidden;
+}
+.commentHeading {
+  border-bottom: 1px solid rgb(200, 200, 200);
+  background-image: linear-gradient(white, rgb(207, 206, 206));
+}
+
+.logo {
+  height: 30px;
+  width: 30px;
+}
+.commenterName {
+  font-size: 20px;
+  color: rgb(85, 85, 85);
+}
+
+.dateAndTime {
+  color: rgb(167, 166, 166);
+}
+
+.commenterMsg {
+  overflow-y: scroll;
+  color: rgb(85, 84, 84);
+  height: 80px;
+  padding: 5px;
 }
