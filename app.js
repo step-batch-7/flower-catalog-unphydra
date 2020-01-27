@@ -44,8 +44,7 @@ const serveGuestBook = function(req) {
   if (req.method == 'POST') {
     const date = new Date();
     let { name, commentMsg } = req.body;
-    commentMsg = decodeURIComponent(commentMsg);
-    commentMsg = commentMsg.replace(/\+/g, ' ');
+    commentMsg = parseComment(commentMsg);
     commentList.unshift({ name, commentMsg, date });
     fs.writeFileSync(
       './commentList.json',
@@ -62,10 +61,21 @@ const serveGuestBook = function(req) {
   return res;
 };
 
+const parseComment = function(comment) {
+  let message = decodeURIComponent(comment);
+  return message.replace(/\+/g, ' ');
+};
+
+const getCommentMessage = function(comment) {
+  let message = comment.replace(/\r\n/g, '<br>');
+  return message.replace(/\s/g, '&nbsp');
+};
+
 const getGustBookHtml = function(commentList) {
   let html = '&nbsp';
   commentList.forEach(comment => {
     const dateAndTime = getDateAndTime(comment.date);
+    const commentMsg = getCommentMessage(comment.commentMsg);
     html += `<div class="eachComment">
       <div class="commentHeading">
         <img src="/images/logo.jpg" alt="" class="logo" />
@@ -73,7 +83,7 @@ const getGustBookHtml = function(commentList) {
         <span class="dateAndTime">${dateAndTime}</span>
       </div>
       <div class="commenterMsg">
-      ${comment.commentMsg}
+      ${commentMsg}
       </div>
     </div>`;
   });
