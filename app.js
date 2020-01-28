@@ -1,35 +1,30 @@
 const fs = require('fs');
-const Response = require('./lib/response');
 const CONTENT_TYPES = require('./lib/mimeTypes');
 const commentList = require('./commentList.json');
 
 const STATIC_FOLDER = `${__dirname}/public`;
 
-const serveStaticFile = req => {
+const serveStaticFile = (req, res) => {
   const path = `${STATIC_FOLDER}${req.url}`;
   const stat = fs.existsSync(path) && fs.statSync(path);
-  if (!stat || !stat.isFile()) return new Response();
+  if (!stat || !stat.isFile()) return serveNotFound(req, res);
   const [, extension] = path.match(/.*\.(.*)$/) || [];
   const contentType = CONTENT_TYPES[extension];
   const content = fs.readFileSync(path);
-  const res = new Response();
   res.setHeader('Content-Type', contentType);
   res.setHeader('Content-Length', content.length);
   res.statusCode = 200;
-  res.body = content;
-  return res;
+  res.end(content);
 };
 
-const serveHomePage = req => {
+const serveHomePage = (req, res) => {
   const html = fs.readFileSync('index.html', 'utf8');
-  const res = new Response();
   if (!req.headers['Cookie'])
     res.setHeader('Set-Cookie', `sessionId=${new Date().getTime()}`);
   res.setHeader('Content-Type', CONTENT_TYPES.html);
   res.setHeader('Content-Length', html.length);
   res.statusCode = 200;
-  res.body = html;
-  return res;
+  res.end(html);
 };
 
 const getDateAndTime = function(dateString) {
@@ -40,9 +35,9 @@ const getDateAndTime = function(dateString) {
   return `${date} ${hour}:${minutes}`;
 };
 
-const serveGuestBookPost = function(req) {
+const serveGuestBookPost = function(req, res, body) {
   const date = new Date();
-  let { name, commentMsg } = req.body;
+  let { name, commentMsg } = body;
   commentMsg = parseComment(commentMsg);
   commentList.unshift({ name, commentMsg, date });
   fs.writeFileSync(
@@ -50,20 +45,17 @@ const serveGuestBookPost = function(req) {
     JSON.stringify(commentList),
     'utf8'
   );
-  const res = new Response();
   res.setHeader('Location', '/html/guestBook.html');
   res.statusCode = 302;
-  return res;
+  res.end();
 };
 
-const serveGuestBook = function(req) {
+const serveGuestBook = function(req, res) {
   const html = getGustBookHtml(commentList);
-  const res = new Response();
   res.setHeader('Content-Type', CONTENT_TYPES.html);
   res.setHeader('Content-Length', html.length);
   res.statusCode = 200;
-  res.body = html;
-  return res;
+  res.end(html);
 };
 
 const parseComment = function(comment) {
@@ -97,6 +89,11 @@ const getGustBookHtml = function(commentList) {
   return content.replace(pattern, html);
 };
 
+const serveNotFound = function(req, res) {
+  res.statusCode = 404;
+  res.end('File Not Found');
+};
+
 const findHandler = req => {
   if (req.method === 'GET') {
     if (req.url === '/') return serveHomePage;
@@ -106,11 +103,11 @@ const findHandler = req => {
   if (req.method === 'POST') {
     if (req.url === '/html/redirect') return serveGuestBookPost;
   }
-  return () => new Response();
+  return serveNotFound;
 };
-const processRequest = req => {
+const processRequest = (req, res, body) => {
   const handler = findHandler(req);
-  return handler(req);
+  return handler(req, res, body);
 };
 
-module.exports = { processRequest };
+module.exports = processRequest;
