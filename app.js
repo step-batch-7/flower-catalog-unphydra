@@ -94,19 +94,31 @@ const serveNotFound = function(req, res) {
   res.end('File Not Found');
 };
 
-const findHandler = req => {
-  if (req.method === 'GET') {
-    if (req.url === '/') return serveHomePage;
-    if (req.url === '/html/guestBook.html') return serveGuestBook;
-    return serveStaticFile;
-  }
-  if (req.method === 'POST') {
-    if (req.url === '/html/redirect') return serveGuestBookPost;
-  }
-  return serveNotFound;
+const methodNotAllowed = function(req, res) {
+  res.statusCode = 404;
+  res.end('Method Not Allowed');
 };
+
+const getHandlers = {
+  '/': serveHomePage,
+  '/html/guestBook.html': serveGuestBook,
+  defaultHandler: serveStaticFile
+};
+
+const postHandlers = {
+  '/html/redirect': serveGuestBookPost,
+  defaultHandler: serveNotFound
+};
+
+const methods = {
+  GET: getHandlers,
+  POST: postHandlers,
+  NOT_ALLOWED: { defaultHandler: methodNotAllowed }
+};
+
 const processRequest = (req, res, body) => {
-  const handler = findHandler(req);
+  const handlers = methods[req.method] || methods.NOT_ALLOWED;
+  const handler = handlers[req.url] || handlers.defaultHandler;
   return handler(req, res, body);
 };
 

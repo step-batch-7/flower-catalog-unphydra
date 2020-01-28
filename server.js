@@ -3,7 +3,7 @@ const queryString = require('querystring');
 const processRequest = require('./app');
 
 const handleConnection = function(req, res) {
-  console.log('url:', req.url, 'method:', req.method);
+  console.log('url:', req.url, '  ', 'method:', req.method);
   let data = '';
   req.on('data', chunk => (data += chunk));
   req.on('end', () => {
