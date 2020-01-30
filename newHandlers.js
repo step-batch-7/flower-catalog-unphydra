@@ -6,15 +6,29 @@ const querystring = require('querystring');
 
 const STATIC_FOLDER = `${__dirname}/public`;
 
-const serveStaticPage = (req, res, next) => {
-  const path = req.url === '/' ? '/html/index.html' : req.url;
-  const absolutePath = `${STATIC_FOLDER}${path}`;
-  const stat = fs.existsSync(absolutePath) && fs.statSync(absolutePath);
-  if (!stat || !stat.isFile()) return next();
+const getExtension = function(path) {
+  return path.match(/.*\.(.*)$/) || [];
+};
 
-  const [, extension] = absolutePath.match(/.*\.(.*)$/) || [];
+const checkForFile = function(path) {
+  const stat = fs.existsSync(path) && fs.statSync(path);
+  return !stat || !stat.isFile();
+};
+
+const givePath = function(url) {
+  const homepage = `${STATIC_FOLDER}/html/index.html`;
+  const staticPath = `${STATIC_FOLDER}${url}`;
+  return url === '/' ? homepage : staticPath;
+};
+
+const serveStaticPage = (req, res, next) => {
+  const path = givePath(req.url); 
+  if (checkForFile(path)) {
+    return next();
+  }
+  const [, extension] = getExtension(path);
   const contentType = CONTENT_TYPES[extension];
-  const content = fs.readFileSync(absolutePath);
+  const content = fs.readFileSync(path);
   res.setHeader('Content-Type', contentType);
   res.setHeader('Content-Length', content.length);
   res.statusCode = 200;
@@ -22,17 +36,17 @@ const serveStaticPage = (req, res, next) => {
 };
 
 const getDateAndTime = function(dateString) {
-  let newDate = new Date(dateString);
+  const newDate = new Date(dateString);
   const hour = newDate.getHours();
   const minutes = newDate.getMinutes();
-  const date = newDate.toJSON().slice(0, 10);
+  const [, date] = newDate.toJSON().split('T').reverse();
   return `${date} ${hour}:${minutes}`;
 };
 
 const serveGuestBookPost = function(req, res) {
   const date = new Date();
-  let { name, commentMsg } = querystring.parse(req.body);
-  commentMsg = parseComment(commentMsg);
+  const { name, commentString } = querystring.parse(req.body);
+  const commentMsg = parseComment(commentString);
   commentList.unshift({ name, commentMsg, date });
   fs.writeFileSync(
     './commentList.json',
@@ -53,12 +67,12 @@ const serveGuestBook = function(req, res) {
 };
 
 const parseComment = function(comment) {
-  let message = decodeURIComponent(comment);
+  const message = decodeURIComponent(comment);
   return message.replace(/\+/g, ' ');
 };
 
 const getCommentMessage = function(comment) {
-  let message = comment.replace(/\r\n/g, '<br>');
+  const message = comment.replace(/\r\n/g, '<br>');
   return message.replace(/\s/g, '&nbsp');
 };
 
@@ -78,8 +92,8 @@ const getGustBookHtml = function(commentList) {
       </div>
     </div>`;
   });
-  let content = fs.readFileSync('./public/html/guestBook.html', 'utf8');
-  const pattern = new RegExp(`__comment__`, 'g');
+  const content = fs.readFileSync('./public/html/guestBook.html', 'utf8');
+  const pattern = new RegExp('__comment__', 'g');
   return content.replace(pattern, html);
 };
 
@@ -90,7 +104,9 @@ const serveNotFound = function(req, res) {
 
 const readBody = function(req, res, next) {
   let data = '';
-  req.on('data', chunk => (data += chunk));
+  req.on('data', chunk => { 
+    data += chunk;
+  });
   req.on('end', () => {
     req.body = data;
     next();
@@ -98,14 +114,13 @@ const readBody = function(req, res, next) {
 };
 
 const methodNotAllowed = function(req, res) {
-  res.writeHead(400, 'Method Not Allowed');
-  res.end();
+  res.statusCode = 400;
+  res.end('Method Not Allowed');
 };
 
 const app = new App();
 
 app.use(readBody);
-// app.get('/', serveHomePage);
 app.get('/html/guestBook.html', serveGuestBook);
 app.get('', serveStaticPage);
 app.post('/html/redirect', serveGuestBookPost);
