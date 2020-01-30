@@ -1,5 +1,5 @@
 const http = require('http');
-const app = require('./newHandlers');
+const app = require('./handlers');
 
 const defaultPort = 4000;
 
