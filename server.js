@@ -1,9 +1,9 @@
 const http = require('http');
-const app = require('./handlers');
+const app = require('./lib/handlers');
 
 const defaultPort = 4000;
 
-const main = ([,, port = defaultPort]) => {
+const main = ([, , port = defaultPort]) => {
   const server = new http.Server(app.serve.bind(app));
   // eslint-disable-next-line no-console
   server.on('error', err => console.error('server error', err));
